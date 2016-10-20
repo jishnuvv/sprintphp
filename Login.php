@@ -2,7 +2,7 @@
 	/**
 	* 
 	*/
-	class login extends CI_controller
+	class Login extends CI_controller
 	{
 		
 		public function loginControl()
@@ -25,10 +25,11 @@
 		{
 			$user['email']=$this->input->post('email');
 			$user['password']=$this->input->post('password');
-			
+			 $this->load->library('session');
+				$this->session->set_userdata($user);
 
 			#print_r($user);
-			$url='http://api.baabtra.com/LoginService/login.php';
+			$url='http://localhost/service3/index.php/Login/loginService';
 			$option=array(
 				'http' =>array(
 					'header'=>"content-type: application/x-www-form-urlencoded\r\n",
@@ -39,20 +40,24 @@
 			$context=stream_context_create($option);
 			$result=file_get_contents($url,false,$context);
 			$json=json_decode($result,true);
-			#print_r($json);
+			// print_r($json);
 			
-			if($json[0]['ResponseCode']==200)
+			if($json['ResponseCode']==200)
 			{
-				$this->load->view('homepage');
+				$this->load->view('homepage',$json);
 			}
-			if ($json[0]['ResponseCode']==500) 
+			if ($json['ResponseCode']==500) 
 			{
-				$this->load->view('passworderror');
+				$this->load->view('passworderror',$json);
 			}
-			if ($json[0]['ResponseCode']==404) 
+			if ($json['ResponseCode']==404) 
 			{
 				$this->load->view('emailerror');
 			}
+			}
+			public function verify()
+			{
+				$this->load->view('emailverify');
 			}
 	}
  ?>
